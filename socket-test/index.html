@@ -74,6 +74,9 @@
     <script>
         $(function(){
             const socket = io();
+            socket.on('connect', () => {
+              console.log('connected to server');
+            });
             $('form').submit(function(e){
                 e.preventDefault();//prevents page reloading
                 socket.emit('chat message', $('#m').val());
