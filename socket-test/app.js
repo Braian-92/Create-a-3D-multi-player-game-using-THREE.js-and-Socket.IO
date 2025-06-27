@@ -1,6 +1,11 @@
 const app = require('express')();
 const http = require('http').createServer(app);
-const io = require('socket.io')(http);
+const io = require('socket.io')(http, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"]
+  }
+});
 
 
 app.get('/', (req, res) => {
@@ -14,7 +19,7 @@ io.on('connection', (socket) => {
   });
   socket.on('chat message', (msg) => {
     console.log('message: ' + msg);
-    socket.broadcast.emit('chat message', msg);
+    io.emit('chat message', msg);
   });
 });
 

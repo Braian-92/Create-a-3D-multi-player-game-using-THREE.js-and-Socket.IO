@@ -74,19 +74,37 @@
     <script>
         $(function(){
             const socket = io();
+            
             socket.on('connect', () => {
               console.log('connected to server');
+              $('#messages').append($('<li>').text('Conectado al servidor').css('color', '#00ff00'));
             });
+            
+            socket.on('disconnect', () => {
+              console.log('disconnected from server');
+              $('#messages').append($('<li>').text('Desconectado del servidor').css('color', '#ff0000'));
+            });
+            
+            socket.on('connect_error', (error) => {
+              console.log('Connection error:', error);
+              $('#messages').append($('<li>').text('Error de conexión: ' + error.message).css('color', '#ff0000'));
+            });
+            
             $('form').submit(function(e){
                 e.preventDefault();//prevents page reloading
-                socket.emit('chat message', $('#m').val());
-                $('#m').val('');
+                const message = $('#m').val();
+                if (message.trim() !== '') {
+                    socket.emit('chat message', message);
+                    $('#m').val('');
+                }
                 return false;
             });
             
             socket.on('chat message', function(msg){
                 $('#messages').append($('<li>').text(msg));
-            })
+                // Auto-scroll al último mensaje
+                $('#messages').scrollTop($('#messages')[0].scrollHeight);
+            });
         });
     </script>
   </head>
